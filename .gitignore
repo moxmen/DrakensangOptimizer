@@ -1,7 +1,5 @@
-bstrap.html
-customController.js
-GetData.php
-index.php
-InsertNewStuff.php
-json2sql_Nico.php
-R136 new items.html
+node_modules/
+dist/
+.DS_Store
+*.log
+google_drive/

@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang='en' data-ng-app='DrakenOptimApp'>
+<head>
+    <title>Drakensang Optimizer v2</title>
+	<meta charset='utf-8' />
+	<meta name="Author" content="Raphael Morineau" />
+	<meta name="Keywords" content="drakensang, DsO, optim, simulat, equip" />
+    <link rel="stylesheet" href="Styles.css"/>
+    <link rel="stylesheet" href="angucomplete-alt.css"/>
+    <script type="text/javascript" src='https://code.angularjs.org/1.3.15/angular.min.js'></script>
+    <script type="text/javascript" src='https://code.angularjs.org/1.3.15/angular-animate.min.js'></script>
+    <script type="text/javascript" src='https://code.angularjs.org/1.3.15/angular-touch.min.js'></script>
+	<script type="text/javascript" src='Controller.js'></script>
+	<script type="text/javascript" src='Directives.js'></script>
+	<script type="text/javascript" src='angucomplete-alt.js'></script>
+	<script type="text/javascript" src='Filters.js'></script>
+	<script type="text/javascript" src='Services.js'></script>
+</head>
+<body data-ng-controller='MainCtrl' data-ng-cloak>
+<img id="FanSiteLogo" src="Images/FanSiteLogo.png" />
+<h1 id="MainTitle" class="red">DrakenOptimizer<br/>"reloaded"</h1>
+<div id='LangSelector'>
+    <a data-ng-repeat="lg in langs" data-ng-class="{'halfOpac': selectedLang!=lg}" 
+        data-ng-click="$parent.selectedLang=lg; ImportData(); ForumLink(lg)">
+        <img class="Scale" data-ng-src='Images/{{lg}}.png' alt='{{lg}} flag'/>
+    </a>
+</div>
+<nav>
+    <a class="Scale" download="CharacterName@Server_DrakenOptimizerProfile01.txt" data-ng-href="{{url}}" 
+        data-ng-click="saveProfile()" title="{{db.sysmess['Save']}}">
+        <img src="Images/downloadProfile.png" alt="download profile"/>
+    </a><br/>
+    <a class="Scale" title="{{db.sysmess['Load']}}" onclick="document.getElementById('inputFile').click()">
+        <img src="Images/openProfile.png" alt="upload profile"/>
+    </a><br/>
+    <input id="inputFile" type="file" accept="text/plain" data-fileread/>
+    <a id="Forum" class="Scale" target="_blank" title="{{db.sysmess['Forum']}}">
+        <img src="Images/Forum.png" alt="forum link"/>
+    </a><br/>
+    <a class="Scale" data-ng-click="ab=true" title="{{db.sysmess['About']}}">
+        <img src="Images/About.png" alt="About link"/>
+    </a><br/>
+	<a class="donate" target="_blank" title="Make a donation via Paypal" 
+	href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5TXTPNCL32WYY">Donate</a>
+</form>
+
+</nav>
+<div id="AboutPopup" data-ng-show="ab" data-ng-click="ab=false" class="animate-show">
+    <div>{{db.sysmess['AboutContent1']}} <a href="mailto:raphael.morineau@gmail.com">Raphaël Morineau</a>.<br>{{db.sysmess['AboutContent2']}}</div>
+</div>
+<div class="main">
+    <div id="InitialData" class="window fullWidth margBottom20">
+        <header class='bg{{selectedJob}}'><h2>{{db.sysmess['InitialData']}}</h2></header>
+        <p>{{db.sysmess['Presentation1']}}  <a href="http://www.drakensang.com/">Drakensang Online ©</a>  {{db.sysmess['Presentation2']}}</p>
+        <div id="wrapper" class="horizCenter">
+	    <fieldset id="PlayerInfos" class="floatL">
+		    <legend align="center"><h3>{{db.sysmess['PlayerInfos']}}</h3></legend>
+            <div class="emblem emblem-{{selectedJob}}"></div>
+            <div id="JobSelector" class="DropdownWrapper floatL" data-ng-mouseleave="toggleJob=false">
+                <div class='SelectionBox' data-ng-click="toggleJob=!toggleJob">
+                    <img data-ng-src='Images/{{selectedJob}}.png' alt='{{selectedJob}} icon'/>
+                    <span>{{db.sysmess[selectedJob]}}</span>
+                </div>
+                <ul class='Selector DWFicon overflow animate-show' data-ng-show="toggleJob">
+                    <li data-ng-repeat="jb in jobs" class="Scale" 
+                        data-ng-click="$parent.selectedJob=jb; $parent.toggleJob=false; ImportData(true)">
+                        <img data-ng-src='Images/{{jb}}.png' alt='{{jb}} icon'/><div>{{db.sysmess[jb]}}</div>
+                    </li>
+                </ul>
+            </div>
+            <input id="LevelSelector" data-ng-model="selectedLevel" data-ng-change="calculAll()" type="number" class="floatL" step="1" min="1" max="45"/><br/><br/>
+            <label>{{db.sysmess['Knowledge']}} :</label><input data-ng-model="KnowledgeLvl" type="number" min="0" max="45" step="1" data-ng-change="mantleDisabled=(KnowledgeLvl<30)?true:false; calculAll()"/><br/>
+			<label data-ng-class="{grey: OpponentSelector!='pvp'}">{{db.sysmess['PvPlevel']}} :</label>
+            <input data-ng-disabled="OpponentSelector!='pvp'" data-ng-model='PvPLvl' data-ng-change="calculAll()" type='number' min='0' max='45' step='1'/><br/>
+            <div class="DropdownWrapper clear" data-ng-mouseleave="togglePet=false">
+                <div class='SelectionBox' data-ng-click="togglePet=!togglePet">
+                    <img data-ng-show="selectedPet!='nopet'" data-ng-src="{{selectedPet=='nopet' ? '' : 'Images/'+db.companions[selectedPet].icon+'.png'}}"
+                         alt='{{db.companions[selectedPet].icon}}'/><span>{{db.companions[selectedPet].name}}</span>
+                </div>
+                <ul class='Selector overflow animate-show' data-ng-show="togglePet">
+                    <li data-ng-repeat="pet in db.companions | keys" data-ng-click="$parent.togglePet=false; $parent.selectedPet=pet; calculAll()" class="Scale">
+                        <img data-ng-show="pet!='nopet'" data-ng-src="{{pet=='nopet'? '' : 'Images/'+db.companions[pet].icon+'.png'}}"
+                             alt='{{db.companions[pet].icon}} icon'/>
+                        <div>
+                            <span>{{db.companions[pet].name}}</span><br>
+                            <span class="Description">{{Description(db.companions[pet])}}</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+	    </fieldset>
+        
+        <fieldset id="OpponentInfos" class="floatR">
+			<legend align="center"><h3>{{db.sysmess['OpponentInfos']}}</h3></legend>
+			<select data-ng-model="OpponentSelector" data-ng-change="calculTalents()">
+				<option value="pve">{{db.sysmess['Monster']}}</option>
+				<option value="pvp">{{db.sysmess['Player']}}</option>
+			</select>
+
+			<input id="OpponentLevel" data-ng-model="OpponentLevel" type="number" min="1" max="45" step="1" data-ng-change="calculAll()"/><br/>
+
+            <label data-ng-class="{grey: OpponentSelector!='pvp'}">{{db.sysmess['PvPlevel']}} :</label>
+            <input data-ng-disabled="OpponentSelector!='pvp'" data-ng-model='OpponentPvPLvl' type='number' min='0' max='45' step='1'/><br/>
+
+			<label>{{db.sysmess['PhysResist']}} :</label><input type="text" data-ng-model="OpponentDefense" data-ng-change="calculSkills()" data-ng-Percentage/><br/>
+
+			<label>{{db.sysmess['resist']}} :</label><input type="text" data-ng-model="OpponentResist" data-ng-change="calculSkills()" data-ng-Percentage/><br/>
+
+			<label data-ng-show="selectedJob=='RNG'">{{db.sysmess['Mark']}}</label>
+            <input data-ng-model="MarkedStatus" type="checkbox" data-ng-show="selectedJob=='RNG'" data-ng-change="calculSkills()"/>
+		</fieldset>
+        </div>
+
+    </div>
+
+    <div id="StatResults" class="window fullWidth margBottom20">
+        <header class='bg{{selectedJob}}'><h2>{{db.sysmess['FinalStatistics']}} {{db.sysmess[selectedJob]}} {{db.sysmess['Level']}} {{selectedLevel}}</h2></header>
+        <div class="floatL">
+	        <fieldset>
+		        <legend align="center"><h3>{{db.sysmess['Potency']}}</h3></legend>
+		        <table>
+			        <tr> <td>{{db.sysmess['BaseDamage']}} :</td>  <td>{{GlobalStats.damagemin.Total | number:0}}<span data-ng-hide="GlobalStats.damagemin.Total==GlobalStats.damagemax.Total"> - {{GlobalStats.damagemax.Total | number:0}}</span></td> </tr>
+			        <tr> <td>{{db.sysmess['critrate']}} :</td>    <td>{{critratePercentage | percentage:2}} ({{GlobalStats.critrate.Total | number:0}})</td> </tr>
+			        <tr> <td>{{db.sysmess['critboost']}} :</td>	  <td>{{(2+GlobalStats.critboost.Total)*100 | number:0}}%</td> </tr>
+			        <tr> <td>{{db.sysmess['speed']}} :</td>	      <td>{{GlobalStats.speed.Total | number:3}} {{db.sysmess['SpeedUnit']}}</td> </tr>
+		        </table>
+	        </fieldset>
+	        <fieldset id="Efficiency">
+		        <legend align="center"><h3>{{db.sysmess['Efficiency']}}</h3></legend>
+		        <h2 data-ng-style="{color: (OpponentSelector=='pvp' && db.essences[selectedEss].damage<5) ? '' : db.essences[selectedEss].color,
+									'margin-left': ((selectedEss=='blank' || (OpponentSelector=='pvp' && db.essences[selectedEss].damage<5)) ? 0 : 45) + 'px'}">
+				{{DPS | number:2}} {{db.sysmess['DPSunit']}}</h2>
+                <img class="floatR" 
+					data-ng-hide="selectedEss=='blank' || (OpponentSelector=='pvp' && db.essences[selectedEss].damage<5)" 
+					data-ng-src="{{'Images/Essence'+db.essences[selectedEss].icon+'.png'}}" alt='{{db.essences[selectedEss].icon}}'/>
+	        </fieldset>
+        </div>
+
+	    <fieldset class="floatR">
+		    <legend align="center"><h3>{{db.sysmess['DefAndResists']}}</h3></legend>
+		    <table>
+			    <tr> <td>{{db.sysmess['TotalHitPoints']}} :</td>  <td>{{GlobalStats.life.Total | number:0}} ({{GlobalStats.regen.Total | number:2}}/sec)</td> </tr>
+			    <tr> <td>{{db.sysmess['movspeed']}} :</td>        <td>{{GlobalStats.movspeed.Total*100 | number:0}}%</td> </tr>
+			    <tr> <td>{{db.sysmess['blockrate']}} :</td>       <td>{{blockratePercentage | percentage:2}} ({{GlobalStats.blockrate.Total | number:0}})</td> </tr>
+			    <tr> <td>{{db.sysmess['blockeddmg']}} :</td>      <td>{{blockeddmgPercentage | percentage:2}} ({{GlobalStats.blockeddmg.Total | number:0}})</td> </tr>
+			    <tr> <td>{{db.sysmess['PhysResist']}} :</td>      <td>{{armorPercentage | percentage:2}} ({{GlobalStats.armor.Total | number:0}})</td> </tr>
+			    <tr> <td>{{db.sysmess['fire']}} :</td>            <td>{{firePercentage | percentage:2}} ({{GlobalStats.fire.Total | number:0}})</td> </tr>
+			    <tr> <td>{{db.sysmess['ice']}} :</td>             <td>{{icePercentage | percentage:2}} ({{GlobalStats.ice.Total | number:0}})</td> </tr>
+			    <tr> <td>{{db.sysmess['lightning']}} :</td>       <td>{{lightningPercentage | percentage:2}} ({{GlobalStats.lightning.Total | number:0}})</td> </tr>
+			    <tr> <td>{{db.sysmess['poison']}} :</td>          <td>{{poisonPercentage | percentage:2}} ({{GlobalStats.poison.Total | number:0}})</td> </tr>
+			    <tr> <td>{{db.sysmess['andermagic']}} :</td>      <td>{{andermagicPercentage | percentage:2}} ({{GlobalStats.andermagic.Total | number:0}})</td> </tr>
+		    </table>
+	    </fieldset>
+    </div>
+    <div id="LeftPanel">
+        <div id='Skills' class="window fullWidth margBottom20">
+            <header class='bg{{selectedJob}}'><h2>{{db.sysmess['Skills']}}</h2>
+            <input data-ng-model="extendedMode" type="checkbox" title="{{db.sysmess['ExtendedMode']}}"/></header>
+            <table>
+				<tr>
+					<th colspan="2">{{db.sysmess['Name']}}s</<th>
+					<th class="alignRight">{{db.sysmess['DamageRanges']}}<br><span data-ng-hide="!critratePercentage">(normal / <span class="bold">critical</span>)</span></th>
+					<th class="animate-show" data-ng-show="extendedMode">{{db.sysmess['SpeedTiers']}}<br>DPS</th>
+				</tr>
+                <tr data-ng-repeat="(key,sk) in db.skills | orderObjectBy:'level'" title="{{sk.description}}"
+                    data-ng-class="{'table-row-{{selectedJob}}':hover}" data-ng-mouseenter="hover=true" data-ng-mouseleave="hover=false"
+                    data-ng-show="(sk.level <= selectedLevel || sk.level==999) && (sk.pvpreqlvl?sk.pvpreqlvl:0) <= PvPLvl
+                        && (SkillsDamage[key].min!=0 || SkillsDamage[key].max!=0 || SkillsDamage[key].critmin!=0 || SkillsDamage[key].critmax!=0)">
+                    <td><img data-ng-src="Images/{{sk.icon}}.png" alt="{{sk.icon}}"/></td>
+                    <td>{{sk.name}}</td>
+                    <td class="alignRight">
+                        {{SkillsDamage[key].min | number:0}}<span data-ng-hide="SkillsDamage[key].min==SkillsDamage[key].max"> - {{SkillsDamage[key].max | number:0}}</span>
+                        <span class="bold" data-ng-hide="!critratePercentage"><br/>{{SkillsDamage[key].critmin | number:0}}<span data-ng-hide="SkillsDamage[key].critmin==SkillsDamage[key].critmax"> - {{SkillsDamage[key].critmax | number:0}}</span></span>
+                    </td>
+					<td class="animate-show" data-ng-show="extendedMode && SpeedSteps[key].min">
+                        {{SpeedSteps[key].min}} - {{SpeedSteps[key].max}}<br/>
+                        {{SpeedSteps[key].dps | number:2}}
+					</td>
+                </tr>
+            </table>
+        </div>
+        <div id='Talents' class="window fullWidth">
+            <header class='bg{{selectedJob}}'><h2>{{db.sysmess['Talents']}}</h2></header>
+            <table data-ng-repeat="cat in ['ExpTree','PvPtree']"
+                   data-ng-hide="!(cat=='ExpTree' || OpponentSelector=='pvp')"
+                   data-ng-class-odd="'floatL'" data-ng-class-even="'floatR'">
+                <caption><h3>{{db.sysmess[cat]}}</h3></caption>
+                <tr data-ng-repeat="lvl in [5,10,15,20,25,30,35,40,45]" data-ng-show="(lvl <= selectedLevel && cat=='ExpTree') || (lvl <= PvPLvl && cat=='PvPtree')">
+                    <td data-ng-repeat="tl in db.talents | FilterTalent:cat:lvl" title="{{db.talents[tl].description}}" 
+                        class="Scale" data-ng-class="{'halfOpac':(selectedTalents[cat][$parent.$index]!=tl)}"
+                        data-ng-click="selectedTalents[cat][$parent.$index]=(selectedTalents[cat][$parent.$index]==tl?'':tl);
+                                       calculTalents()">
+                        <img data-ng-src="Images/{{db.talents[tl].icon}}.png" alt="{{db.talents[tl].icon}}"
+                             data-ng-class-odd="'floatL'" data-ng-class-even="'floatR'"/>
+                        <input type="checkbox"
+                               data-ng-checked="selectedTalents[cat][$parent.$index]==tl"
+                               data-ng-class-odd="'floatL'" data-ng-class-even="'floatR'"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div id="RightPanel">
+        <div equip-Display></div>
+    </div>
+</div>
+
+<footer> Powered by <img src="Images/AngularJSlogo.png"/></footer>
+<script type="text/ng-template" id="index.html"></script>
+</body>
+</html>

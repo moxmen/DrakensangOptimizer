@@ -1,0 +1,117 @@
+/* =============================================================================
+   tokens.css — palette & typographie « Drakensang » (relevée sur la maquette)
+   ========================================================================== */
+@import '@fontsource/cinzel/400.css';
+@import '@fontsource/cinzel/600.css';
+@import '@fontsource/cinzel/700.css';
+@import '@fontsource/amiri/400.css';
+@import '@fontsource/amiri/700.css';
+
+:root {
+  /* fonds */
+  --ink-0: #05060a;
+  --ink-1: #0a0c12;
+  --ink-2: #11151d;
+  --ink-3: #1a202b;
+  --ink-4: #242c39;
+
+  /* bronze / or */
+  --bronze-0: #3a2a10;
+  --bronze-1: #6d4f20;
+  --bronze-2: #9c7532;
+  --bronze-3: #c9a457;
+  --gold-1: #e7cd8f;
+  --gold-2: #f6e6b8;
+
+  /* acier bleuté (boutons de navigation) */
+  --steel-0: #10202c;
+  --steel-1: #1c3a4c;
+  --steel-2: #2f6076;
+  --steel-3: #7fb6cd;
+  --steel-glow: #a8dcf0;
+
+  /* feu / rouge */
+  --fire-0: #4a0e0a;
+  --fire-1: #7c1b12;
+  --fire-2: #c0431c;
+  --fire-3: #f08a2a;
+  --fire-4: #ffc957;
+
+  /* vert de l'onglet actif */
+  --verd-0: #16351f;
+  --verd-1: #2f6b3a;
+  --verd-2: #6fae5e;
+
+  /* texte */
+  --parchment: #e8dcc0;
+  --parchment-dim: #bfae8d;
+  --parchment-muted: #8d8069;
+  --text-muted: #9a8f78;
+  --text-gold: #d9bd7d;
+
+  /* raretés (couleurs du jeu) */
+  --q-enhanced: #6ec96e;
+  --q-magic: #63a8ff;
+  --q-extra: #c07bff;
+  --q-legend: #ff9b3d;
+  --q-unique: #ffd34d;
+
+  /* typo */
+  --font-display: 'Cinzel', 'Amiri', 'Times New Roman', serif;
+  --font-body: 'Cinzel', 'Amiri', 'Palatino Linotype', Georgia, serif;
+  --font-arabic: 'Amiri', 'Cinzel', serif;
+
+  /* bordures & ombres */
+  --edge-gold: 1px solid rgba(201, 164, 87, 0.55);
+  --edge-gold-strong: 1px solid rgba(231, 205, 143, 0.85);
+  --shadow-panel: 0 18px 40px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 236, 190, 0.09);
+  --shadow-inset: inset 0 2px 8px rgba(0, 0, 0, 0.85), inset 0 -1px 0 rgba(255, 231, 176, 0.1);
+  --bevel: inset 0 1px 0 rgba(255, 244, 214, 0.28), inset 0 -2px 6px rgba(0, 0, 0, 0.75);
+
+  --radius: 6px;
+  --radius-sm: 4px;
+  --gap: 14px;
+}
+
+html[dir='rtl'] {
+  --font-body: 'Amiri', 'Cinzel', serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root { height: 100%; }
+
+body {
+  margin: 0;
+  color: var(--parchment);
+  background-color: var(--ink-0);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+html[dir='rtl'] body {
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+a { color: var(--gold-1); text-decoration: none; }
+a:hover { color: var(--gold-2); text-decoration: underline; }
+
+h1, h2, h3, h4 { font-family: var(--font-display); margin: 0; font-weight: 700; letter-spacing: 0.06em; }
+
+button, input, select, textarea { font-family: inherit; color: inherit; }
+
+::selection { background: rgba(240, 138, 42, 0.4); color: #fff; }
+
+/* barres de défilement dans le thème */
+* { scrollbar-width: thin; scrollbar-color: var(--bronze-2) var(--ink-2); }
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: linear-gradient(#0d1016, #05060a); }
+*::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, var(--bronze-3), var(--bronze-1));
+  border: 1px solid #2a1e0c;
+  border-radius: 6px;
+}

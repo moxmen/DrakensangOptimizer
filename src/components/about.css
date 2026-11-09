@@ -1,0 +1,38 @@
+.about { max-width: 900px; margin-inline: auto; }
+.about__lead { font-size: 14px; line-height: 1.75; color: var(--parchment); margin: 0 0 6px; }
+.about__counts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 10px;
+  margin: 14px 0;
+}
+.about__count {
+  display: grid;
+  justify-items: center;
+  gap: 3px;
+  padding: 12px 8px;
+  border: 1px solid rgba(201, 164, 87, 0.28);
+  border-radius: 4px;
+  background: rgba(6, 9, 13, 0.6);
+}
+.about__count b { font-family: var(--font-display); font-size: 20px; color: var(--gold-1); }
+.about__count span { font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text-muted); }
+.about__sub {
+  font-family: var(--font-display);
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-gold);
+  margin: 12px 0 8px;
+}
+.about__formula {
+  font-family: var(--font-mono, ui-monospace, monospace);
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--parchment-dim);
+  background: rgba(0, 0, 0, 0.45);
+  border-inline-start: 2px solid rgba(201, 164, 87, 0.5);
+  padding: 8px 12px;
+  border-radius: 3px;
+}
+html[dir='rtl'] .about__formula { direction: ltr; text-align: left; }

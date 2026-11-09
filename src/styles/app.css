@@ -1,0 +1,64 @@
+/* ── structure principale ────────────────────────────────────────────────── */
+.app-main { padding-top: 6px; }
+
+.builder-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.02fr) minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+}
+.builder-left, .builder-right { display: flex; flex-direction: column; min-width: 0; }
+
+.gear-hint { text-align: center; margin-top: 4px; }
+.builder-actions { justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+
+/* ── pied de page ────────────────────────────────────────────────────────── */
+.site-footer { margin-top: 30px; text-align: center; color: var(--text-muted); }
+.site-footer p { margin: 4px 0; }
+
+/* ── chargement ──────────────────────────────────────────────────────────── */
+.loading-shell { display: grid; place-items: center; min-height: 100vh; }
+.loading { text-align: center; display: grid; gap: 14px; justify-items: center; }
+.loading p {
+  font-family: var(--font-display);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--gold-1);
+}
+.loading__ember {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%, #ffe2a0, #ff9214 40%, #7a1c05 75%, transparent 78%);
+  box-shadow: 0 0 40px rgba(255, 140, 30, 0.8);
+  animation: emberPulse 1.6s ease-in-out infinite;
+}
+@keyframes emberPulse {
+  0%, 100% { transform: scale(0.92); opacity: 0.8; }
+  50% { transform: scale(1.08); opacity: 1; }
+}
+
+/* ── notification flottante ──────────────────────────────────────────────── */
+.toast {
+  position: fixed;
+  inset-block-end: 26px;
+  inset-inline-start: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  padding: 10px 22px;
+  border: 1px solid rgba(231, 205, 143, 0.75);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(32, 24, 10, 0.97), rgba(10, 8, 5, 0.98));
+  color: #ffeec7;
+  font-size: 12.5px;
+  letter-spacing: 0.08em;
+  box-shadow: 0 12px 34px rgba(0, 0, 0, 0.85), 0 0 22px rgba(255, 170, 60, 0.25);
+  animation: toastIn 0.22s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.toast--warn { border-color: rgba(255, 130, 90, 0.8); color: #ffd6c8; }
+@keyframes toastIn { from { opacity: 0; transform: translate(-50%, 12px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+@media (max-width: 1080px) {
+  .builder-layout { grid-template-columns: 1fr; }
+}

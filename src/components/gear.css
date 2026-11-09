@@ -1,0 +1,178 @@
+/* ── rack d'équipement ───────────────────────────────────────────────────── */
+.gear-rack {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 18px;
+  align-items: start;
+  padding: 8px 4px 12px;
+}
+.gear-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; align-content: start; }
+.gear-col--left { justify-items: end; }
+.gear-col--right { justify-items: start; }
+/* 7 objets : le dernier occupe les deux colonnes (arme / main secondaire) */
+.gear-col > .gear-slot:last-child { grid-column: 1 / -1; }
+
+.gear-slot {
+  position: relative;
+  width: 78px;
+  height: 78px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  display: grid;
+  place-items: center;
+  transition: transform 0.14s ease, filter 0.18s ease;
+}
+.gear-slot__frame {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  border: 1px solid rgba(201, 164, 87, 0.55);
+  background:
+    radial-gradient(circle at 50% 30%, rgba(58, 72, 90, 0.75), rgba(8, 10, 14, 0.95) 72%);
+  box-shadow:
+    inset 0 2px 10px rgba(0, 0, 0, 0.9),
+    inset 0 -1px 0 rgba(255, 232, 180, 0.12),
+    0 4px 12px rgba(0, 0, 0, 0.7);
+  transition: border-color 0.18s, box-shadow 0.18s;
+}
+/* coins métalliques */
+.gear-slot__frame::before,
+.gear-slot__frame::after {
+  content: '';
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border: 1px solid rgba(231, 205, 143, 0.75);
+  border-radius: 2px;
+  opacity: 0.9;
+}
+.gear-slot__frame::before { top: 3px; inset-inline-start: 3px; border-width: 1px 0 0 1px; }
+.gear-slot__frame::after { bottom: 3px; inset-inline-end: 3px; border-width: 0 1px 1px 0; }
+
+.gear-slot img {
+  position: relative;
+  z-index: 1;
+  width: 58px;
+  height: 58px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.9));
+  pointer-events: none;
+}
+.gear-slot__empty {
+  position: relative;
+  z-index: 1;
+  width: 26px;
+  height: 26px;
+  border: 1px dashed rgba(201, 164, 87, 0.35);
+  border-radius: 50%;
+  opacity: 0.5;
+}
+.gear-slot__empty::after {
+  content: '+';
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 17px;
+  color: rgba(231, 205, 143, 0.6);
+  line-height: 1;
+}
+
+.gear-slot:hover { transform: translateY(-2px) scale(1.04); }
+.gear-slot:hover .gear-slot__frame {
+  border-color: var(--gold-2);
+  box-shadow:
+    inset 0 2px 10px rgba(0, 0, 0, 0.85),
+    0 0 22px rgba(255, 170, 50, 0.45),
+    0 6px 18px rgba(0, 0, 0, 0.8);
+}
+.gear-slot:focus-visible { outline: none; }
+.gear-slot:focus-visible .gear-slot__frame { outline: 2px solid var(--gold-1); outline-offset: 2px; }
+
+.gear-slot__label {
+  position: absolute;
+  bottom: -14px;
+  inset-inline: -8px;
+  font-size: 9px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgba(201, 178, 130, 0.55);
+  text-align: center;
+  pointer-events: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+html[dir='rtl'] .gear-slot__label { letter-spacing: 0; font-size: 10.5px; }
+
+.gear-slot__uniq {
+  position: absolute;
+  top: 2px;
+  inset-inline-end: 4px;
+  z-index: 2;
+  font-size: 11px;
+  color: var(--q-unique);
+  text-shadow: 0 0 8px rgba(255, 210, 70, 0.9);
+}
+
+/* couleurs de rareté */
+.gear-slot.quality-unique .gear-slot__frame { border-color: rgba(255, 211, 77, 0.85); box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.85), 0 0 16px rgba(255, 200, 60, 0.28); }
+.gear-slot.quality-legend .gear-slot__frame { border-color: rgba(255, 155, 61, 0.8); }
+.gear-slot.quality-extra .gear-slot__frame { border-color: rgba(192, 123, 255, 0.75); }
+.gear-slot.quality-magic .gear-slot__frame { border-color: rgba(99, 168, 255, 0.75); }
+.gear-slot.quality-enhanced .gear-slot__frame { border-color: rgba(110, 201, 110, 0.75); }
+
+/* portrait */
+.gear-portrait { text-align: center; min-width: 200px; }
+.gear-portrait__frame {
+  position: relative;
+  width: 190px;
+  height: 250px;
+  margin-inline: auto;
+  border: 1px solid rgba(201, 164, 87, 0.65);
+  border-radius: 4px;
+  overflow: hidden;
+  background: radial-gradient(circle at 50% 60%, #172030 0%, #06080c 78%);
+  box-shadow:
+    0 0 0 1px rgba(0, 0, 0, 0.9),
+    inset 0 0 40px rgba(0, 0, 0, 0.9),
+    0 12px 34px rgba(0, 0, 0, 0.8);
+}
+.gear-portrait__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+  filter: contrast(1.05) saturate(1.05);
+}
+.gear-portrait__glow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(60% 40% at 50% 100%, rgba(255, 140, 40, 0.22), transparent 70%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.35), transparent 30%);
+  mix-blend-mode: screen;
+}
+.gear-portrait__class {
+  margin-top: 10px;
+  font-family: var(--font-display);
+  font-size: 13px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold-1);
+  text-shadow: 0 1px 0 #000, 0 0 14px rgba(255, 180, 70, 0.35);
+}
+.gear-portrait__level { font-size: 11.5px; color: var(--text-muted); letter-spacing: 0.1em; }
+.gear-portrait__level b { color: var(--parchment); font-size: 13px; }
+
+@media (max-width: 860px) {
+  .gear-rack { grid-template-columns: 1fr; }
+  .gear-col { grid-template-columns: repeat(4, minmax(0, 1fr)); justify-items: center; }
+  .gear-col > .gear-slot:last-child { grid-column: auto; }
+  .gear-portrait { order: -1; }
+  .gear-portrait__frame { width: 150px; height: 195px; }
+}

@@ -1,0 +1,170 @@
+/* ── éditeur d'objet (modale) ─────────────────────────────────────────────── */
+.editor-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 18px;
+  background:
+    radial-gradient(60% 50% at 50% 40%, rgba(30, 12, 4, 0.55), rgba(0, 0, 0, 0.88));
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.16s ease;
+  overflow-y: auto;
+}
+.editor {
+  width: min(940px, 100%);
+  max-height: 92vh;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  animation: popIn 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.editor .panel__body { overflow-y: auto; padding: 18px 20px 20px; }
+@keyframes popIn { from { opacity: 0; transform: translateY(10px) scale(0.985); } to { opacity: 1; transform: none; } }
+
+.editor__top {
+  display: grid;
+  grid-template-columns: auto minmax(220px, 1fr) minmax(140px, 200px);
+  gap: 16px;
+  align-items: end;
+}
+.editor__preview { display: flex; gap: 12px; align-items: center; }
+.editor__icon {
+  width: 76px;
+  height: 76px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(201, 164, 87, 0.6);
+  border-radius: 6px;
+  background: radial-gradient(circle at 50% 30%, #2a3546, #07090d 75%);
+  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.9), 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+.editor__icon img { width: 60px; height: 60px; object-fit: contain; }
+.editor__icon.quality-unique { border-color: var(--q-unique); box-shadow: inset 0 2px 10px #000, 0 0 18px rgba(255, 205, 60, 0.35); }
+.editor__name { font-family: var(--font-display); font-size: 15px; }
+.editor__meta { max-width: 190px; }
+
+.editor__search { position: relative; }
+.editor__list {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 4px);
+  inset-inline: 0;
+  max-height: 260px;
+  overflow-y: auto;
+  margin: 0;
+  padding: 4px;
+  list-style: none;
+  background: linear-gradient(180deg, #11161f, #070a0e);
+  border: 1px solid rgba(201, 164, 87, 0.6);
+  border-radius: 4px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
+}
+.editor__list button {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  width: 100%;
+  padding: 6px 8px;
+  border: none;
+  background: transparent;
+  color: var(--parchment);
+  text-align: start;
+  cursor: pointer;
+  border-radius: 3px;
+  font-size: 13px;
+}
+.editor__list button:hover { background: rgba(201, 164, 87, 0.16); }
+.editor__list img { width: 26px; height: 26px; object-fit: contain; }
+.editor__list span:nth-child(2) { flex: 1; }
+
+.editor__section { margin-top: 16px; }
+.editor__sectionTitle {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-gold);
+  margin-bottom: 9px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid rgba(201, 164, 87, 0.25);
+}
+html[dir='rtl'] .editor__sectionTitle { letter-spacing: 0; font-family: var(--font-arabic); font-size: 13px; }
+
+.editor__enchants { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 9px; }
+.editor__enchant { display: grid; grid-template-columns: 1fr 86px auto; gap: 7px; align-items: center; }
+.editor__enchantValue { text-align: end; }
+.editor__hint { min-width: 16px; }
+
+.editor__gems { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 9px; }
+.editor__gem { position: relative; }
+.editor__gemBtn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 7px 9px;
+  border: 1px solid rgba(140, 106, 48, 0.55);
+  border-radius: 4px;
+  background: linear-gradient(180deg, rgba(10, 14, 20, 0.9), rgba(22, 28, 38, 0.85));
+  color: var(--parchment-dim);
+  cursor: pointer;
+  font-size: 12px;
+  text-align: start;
+  box-shadow: var(--shadow-inset);
+}
+.editor__gemBtn:hover { border-color: var(--gold-1); color: var(--gold-1); }
+.editor__gemBtn img { width: 24px; height: 24px; object-fit: contain; }
+.editor__socket { width: 24px; text-align: center; color: #55707f; }
+.editor__gemList {
+  position: absolute;
+  z-index: 25;
+  top: calc(100% + 4px);
+  inset-inline: 0;
+  max-height: 240px;
+  overflow-y: auto;
+  padding: 6px;
+  background: linear-gradient(180deg, #11161f, #070a0e);
+  border: 1px solid rgba(201, 164, 87, 0.6);
+  border-radius: 4px;
+  box-shadow: 0 18px 40px rgba(0, 0, 0, 0.9);
+}
+.editor__gemGroup h4 {
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--text-gold);
+  margin: 7px 0 4px;
+}
+.editor__gemItem {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  width: 100%;
+  padding: 4px 6px;
+  border: none;
+  border-radius: 3px;
+  background: transparent;
+  color: var(--parchment-dim);
+  font-size: 12px;
+  text-align: start;
+  cursor: pointer;
+}
+.editor__gemItem:hover { background: rgba(201, 164, 87, 0.16); color: #fff; }
+.editor__gemItem img { width: 20px; height: 20px; object-fit: contain; }
+
+.editor__footer {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(201, 164, 87, 0.25);
+  display: grid;
+  gap: 12px;
+}
+.editor__reqlvl { max-width: 140px; }
+.editor__footer .row { justify-content: flex-end; }
+
+@media (max-width: 760px) {
+  .editor__top { grid-template-columns: 1fr; }
+  .editor__footer .row { justify-content: stretch; }
+  .editor__footer .row .btn { flex: 1; }
+}

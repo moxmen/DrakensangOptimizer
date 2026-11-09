@@ -1,0 +1,57 @@
+/* ── feuille de personnage ───────────────────────────────────────────────── */
+.stats-wrap { display: flex; flex-direction: column; gap: 0; }
+
+.stats-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  background:
+    radial-gradient(60% 100% at 20% 50%, rgba(255, 130, 30, 0.14), transparent 70%);
+}
+.stats-hero__dps { display: flex; flex-direction: column; gap: 2px; }
+.stats-hero__side { display: grid; gap: 8px; }
+.stat-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 5px 0;
+  border-bottom: 1px solid rgba(140, 106, 48, 0.18);
+  font-size: 13.5px;
+}
+.stat-line b { font-size: 15px; color: #f6e9c9; font-variant-numeric: tabular-nums; }
+
+.stats-breakdown { border-top: 1px solid rgba(140, 106, 48, 0.25); padding-top: 12px; }
+.stats-formula { margin: 0; display: grid; gap: 5px; }
+.stats-formula code {
+  font-family: ui-monospace, 'Courier New', monospace;
+  font-size: 12px;
+  color: #d9c9a5;
+  background: rgba(0, 0, 0, 0.45);
+  border: 1px solid rgba(140, 106, 48, 0.3);
+  border-radius: 4px;
+  padding: 7px 10px;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+html[dir='rtl'] .stats-formula code { direction: ltr; text-align: left; }
+
+/* liste des bonus d'ensemble */
+.set-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; }
+.set-list > li {
+  border: 1px solid rgba(201, 164, 87, 0.28);
+  border-radius: 4px;
+  padding: 10px 12px;
+  background: rgba(6, 9, 13, 0.55);
+}
+.set-list__title { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 7px; }
+.set-list__bonuses { list-style: none; margin: 0; padding: 0; display: grid; gap: 3px; }
+.set-list__bonuses li { display: flex; justify-content: space-between; font-size: 12.5px; color: var(--parchment-dim); }
+.set-list__bonuses b { color: #f2e2bd; }
+
+.stats-footnote { margin: 6px 0; }
+
+@media (max-width: 720px) {
+  .stats-hero { grid-template-columns: 1fr; }
+}
