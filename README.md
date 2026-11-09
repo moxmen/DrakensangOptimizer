@@ -34,10 +34,12 @@ node scripts/render-test.mjs     # headless (jsdom) render + interaction tests
   minimal Angular shim, generates 40 random builds across the four classes
   (random items, enchants, gems, talents, pets, essences, PvE/PvP opponents) and
   compares every figure: **1960/1960 values are bit-identical** to the legacy engine.
-* `render-test.mjs` mounts the real app in jsdom and checks 52 assertions:
+* `render-test.mjs` mounts the real app in jsdom and checks 80 assertions:
   language switching, `dir="rtl"`, Arabic strings in every panel, item editor,
   equipping an item (DPS changes), essence picker, saving/exporting builds,
-  and that no panel ever prints `NaN`, `undefined`, `null` or a raw `i18n` key.
+  that no panel ever prints `NaN`, `undefined`, `null` or a raw `i18n` key,
+  that every `<img>` points at an existing file, and that the compiled CSS keeps
+  the ornamental frames, the RTL overrides and both fonts.
 
 ## Features
 
@@ -95,9 +97,15 @@ filigrees and flags are produced by `scripts/make-assets.py`
 (`python3 scripts/make-assets.py`, requires Pillow).
 
 **Add a language.** Add an entry to `LANGUAGES` in `src/i18n/index.js`, add the
-two-letter code to `LANGS` in `scripts/lib.mjs`, provide the UI strings in
-`scripts/arabic/sysmess.mjs` (one block per language), a flag in
-`scripts/make-assets.py`, and run `npm run data`.
+code to `LANGS` in `scripts/lib.mjs`, provide the UI strings in
+`scripts/arabic/sysmess.mjs` (one block per language), drop a flag PNG in
+`src/assets/theme/flags/` and expose it in `flags/index.js`, then run
+`npm run data`.
+
+**Change the header or the page background.** They use the official fan-kit
+artwork: `src/assets/theme/fankit-banner.png` and `fankit-bg.jpg` (replace the
+files, no code change needed). They are imported as ES modules — referencing
+`/assets/...` by URL would 404 in production because `src/` is not served.
 
 **Change the math.** `src/engine/stats.js` is a direct, line-by-line port; run
 `node scripts/verify-legacy.mjs` after any modification — it tells you exactly
