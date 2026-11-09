@@ -180,3 +180,21 @@ html[dir='rtl'] .gear-slot__label { letter-spacing: 0; font-size: 9.5px; }
   .gear-portrait { order: -1; }
   .gear-portrait__frame { width: 150px; height: 195px; }
 }
+
+/* repli lorsqu'une illustration manque dans l'ancienne base */
+.item-icon-fallback {
+  display: inline-grid;
+  place-items: center;
+  width: 58px;
+  height: 58px;
+  border: 1px solid rgba(201, 164, 87, 0.5);
+  border-radius: 4px;
+  background: radial-gradient(circle at 50% 35%, rgba(60, 74, 92, 0.85), rgba(8, 10, 14, 0.95) 72%);
+  color: var(--gold-1);
+  font-family: var(--font-display);
+  font-size: 15px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-shadow: 0 1px 0 #000;
+}
+.essence__item .item-icon-fallback { width: 44px; height: 44px; font-size: 15px; }

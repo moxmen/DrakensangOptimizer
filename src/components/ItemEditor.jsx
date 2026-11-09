@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { categoryForSlot, localizedName } from '../data/catalog.js';
 import { emptyEquip } from '../state/build.js';
 import { STAT_LABELS } from '../data/labels.js';
+import ItemIcon from './ItemIcon.jsx';
 import './editor.css';
 
 const OFFENSIVE = ['damage', 'damagepve', 'damagepvp', 'damagemin', 'damagemax', 'weapondamageboost', 'speed', 'critrate', 'critboost'];
@@ -224,7 +225,7 @@ export default function ItemEditor({
           <div className="editor__top">
             <div className="editor__preview">
               <div className={`editor__icon quality-${item.quality || 'empty'}`}>
-                <img src={`./images/${item.icon}.png`} alt={item.name || 'item'} />
+                <ItemIcon icon={item.icon} alt={item.name || 'item'} fallback="◈" />
               </div>
               <div className="editor__meta">
                 <div className={`editor__name quality-${item.quality || 'empty'}`}>
@@ -260,7 +261,7 @@ export default function ItemEditor({
                   {options.map((entry) => (
                     <li key={entry.key}>
                       <button type="button" onClick={() => pickItem(entry)}>
-                        <img src={`./images/${entry.icon}.png`} alt="" />
+                        <ItemIcon icon={entry.icon} alt="" fallback="◈" />
                         <span>{localizedName(catalog[`${category}Names`], entry, lang, entry.key)}</span>
                         <span className={`small ${entry.unic ? 'quality-unique' : 'muted'}`}>
                           {entry.unic ? '★' : ''} {entry.level ? `Lv ${entry.level}` : ''}
@@ -367,7 +368,7 @@ export default function ItemEditor({
                         onClick={() => setGemOpen(gemOpen === idx ? null : idx)}
                         title={t('socket')}
                       >
-                        {info ? <img src={`./images/${info.icon}.png`} alt="" /> : <span className="editor__socket">◈</span>}
+                        {info ? <ItemIcon icon={info.icon} alt="" fallback="◈" /> : <span className="editor__socket">◈</span>}
                         <span>{info ? localizedName(catalog.gemsNames, info, lang, gem.key) : t('nogem')}</span>
                       </button>
                       {gemOpen === idx ? (
@@ -385,7 +386,7 @@ export default function ItemEditor({
                                   className="editor__gemItem"
                                   onClick={() => { setGem(idx, g.key); setGemOpen(null); }}
                                 >
-                                  <img src={`./images/${g.icon}.png`} alt="" />
+                                  <ItemIcon icon={g.icon} alt="" fallback="◈" />
                                   <span>{localizedName(catalog.gemsNames, g, lang, g.key)}</span>
                                 </button>
                               ))}

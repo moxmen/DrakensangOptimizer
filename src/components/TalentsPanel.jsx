@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
 import { localizedName, localizedDescription } from '../data/catalog.js';
+import ItemIcon from './ItemIcon.jsx';
 import './talents.css';
 
 const LEVELS = [5, 10, 15, 20, 25, 30, 35, 40, 45];
@@ -56,7 +57,7 @@ export default function TalentsPanel({ build, catalog, t, lang, onToggleTalent }
                               onClick={() => onToggleTalent(tree.key, rowIndex, active ? '' : tl.key)}
                               title={`${name}${localizedDescription(catalog.talentsNames, tl, lang) ? ` — ${localizedDescription(catalog.talentsNames, tl, lang)}` : ''}`}
                             >
-                              <img src={`./images/${tl.icon}.png`} alt="" />
+                              <ItemIcon icon={tl.icon} alt="" fallback="★" />
                               <span>{name}</span>
                             </button>
                           );

@@ -1,5 +1,6 @@
 import React from 'react';
 import { localizedName } from '../data/catalog.js';
+import ItemIcon from './ItemIcon.jsx';
 import './essence.css';
 
 /**
@@ -26,7 +27,7 @@ export default function EssencePicker({ catalog, lang, t, value, onChange, onClo
                   className={`essence__item${active ? ' is-active' : ''}`}
                   onClick={() => { onChange(ess.key); onClose(); }}
                 >
-                  <img src={`./images/Essence${ess.icon}.png`} alt="" />
+                  <ItemIcon icon={ess.icon === 'blank' ? null : `Essence${ess.icon}`} alt="" fallback="◈" />
                   <span className="essence__name">{localizedName(catalog.essencesNames, ess, lang, ess.key)}</span>
                   <span className="essence__stats small muted">
                     {Object.entries(ess.stats || {}).map(([k, v]) => (

@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { localizedName, localizedDescription } from '../data/catalog.js';
 import { formatNumber } from '../data/labels.js';
+import ItemIcon from './ItemIcon.jsx';
 import './skills.css';
 
 /** Tableau des dégâts par compétence (valeurs issues de engine/stats.js). */
@@ -74,7 +75,7 @@ export default function SkillsPanel({ result, build, catalog, t, lang, extended,
                 {rows.map(({ key, skill, dmg, step, name, description }) => (
                   <tr key={key} title={description}>
                     <td className="skills-table__icon">
-                      <img src={`./images/${skill.icon}.png`} alt="" />
+                      <ItemIcon icon={skill.icon} alt="" fallback="✦" />
                     </td>
                     <td className="skills-table__name">
                       <span>{name}</span>

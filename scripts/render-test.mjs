@@ -200,6 +200,8 @@ check('DPS is a number', /^[0-9]/.test(String(dpsAfter || '').replace(/[^0-9]/g,
 const stored = JSON.parse(window.localStorage.getItem('dso.current.v3') || '{}');
 check('Build persisted in localStorage', !!stored.slots, Object.keys(stored).slice(0, 5).join(','));
 check('Equipped weapon persisted', !!stored.slots?.weapons?.hashkey, stored.slots?.weapons?.hashkey);
+const equippedIcon = stored.slots?.weapons?.icon;
+check('Equipped item icon exists', !!equippedIcon && fs.existsSync(path.join(ROOT, 'public/images', `${equippedIcon}.png`)), equippedIcon);
 check('13 slots persisted', Object.keys(stored.slots || {}).length === 13, `${Object.keys(stored.slots || {}).length}`);
 
 // ── sélecteur d'essence ───────────────────────────────────────────────────

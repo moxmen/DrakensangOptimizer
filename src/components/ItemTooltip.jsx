@@ -1,6 +1,7 @@
 import React from 'react';
 import { formatStatValue } from '../data/labels.js';
 import { localizedName } from '../data/catalog.js';
+import ItemIcon from './ItemIcon.jsx';
 
 /**
  * Infobulle d'objet : nom coloré selon la rareté, type, stats de base,
@@ -51,7 +52,12 @@ export default function ItemTooltip({ equip, rect, catalog, t, tSys, lang }) {
         if (!gem) return null;
         return (
           <div className="tooltip__gems" key={`${g.key}-${i}`}>
-            <img src={`./images/${gem.icon}.png`} alt="" style={{ width: 18, height: 18, verticalAlign: '-4px', marginInlineEnd: 6 }} />
+            <ItemIcon
+              icon={gem.icon}
+              alt=""
+              fallback="◈"
+              style={{ width: 18, height: 18, verticalAlign: '-4px', marginInlineEnd: 6 }}
+            />
             {localizedName(catalog.gemsNames, gem, lang, g.key)}
           </div>
         );

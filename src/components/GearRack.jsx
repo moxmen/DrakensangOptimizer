@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { isSlotEmpty } from '../state/build.js';
+import ItemIcon from './ItemIcon.jsx';
 import './gear.css';
 
 /**
@@ -38,7 +39,9 @@ function GearSlot({ slot, icon, name, quality, unic, onOpen, onClear, t, hint, o
       data-slot={slot}
     >
       <span className="gear-slot__frame" aria-hidden="true" />
-      {icon ? <img src={`./images/${icon}.png`} alt={name || slot} draggable="false" /> : <span className="gear-slot__empty" />}
+      {icon
+        ? <ItemIcon icon={icon} alt={name || slot} draggable={false} fallback={(name || slot).slice(0, 2)} />
+        : <span className="gear-slot__empty" />}
       <span className="gear-slot__label">{hint}</span>
       {unic ? <span className="gear-slot__uniq" aria-label="unique">★</span> : null}
     </button>
