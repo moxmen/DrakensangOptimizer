@@ -70,6 +70,20 @@ window.console.error = (...args) => {
 window.eval(code);
 
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+/** Concatène tout le code source (JSX/CSS) pour les vérifications statiques. */
+function readAllSources() {
+  const out = [];
+  const walk = (dir) => {
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) walk(full);
+      else if (/\.(jsx?|css)$/.test(entry.name)) out.push(fs.readFileSync(full, 'utf8'));
+    }
+  };
+  walk(path.join(ROOT, 'src'));
+  return out.join('\n');
+}
 await wait(700);
 
 const root = window.document.getElementById('root');
@@ -83,7 +97,7 @@ const check = (label, cond, extra = '') => {
 
 check('React mounted', root.children.length > 0, `${root.children.length} child`);
 check('No console errors', errors.length === 0, errors.slice(0, 3).join(' | '));
-check('Header crest rendered', !!root.querySelector('.crest__title'));
+check('Header crest rendered', !!root.querySelector('.crest__banner img'), root.querySelector('.crest__banner img')?.getAttribute('src'));
 check('Language flags rendered', root.querySelectorAll('.lang-flag').length === 5, `${root.querySelectorAll('.lang-flag').length} flags`);
 check('Gear slots rendered', root.querySelectorAll('.gear-slot').length === 14, `${root.querySelectorAll('.gear-slot').length} slots`);
 check('DPS panel rendered', !!root.querySelector('.dps-huge'), root.querySelector('.dps-huge')?.textContent);
@@ -318,9 +332,12 @@ if (distCss.length) {
   check('CSS: surcharges RTL présentes', /html\[dir=rtl\]/.test(css),
     `${(css.match(/html\[dir=rtl\]/g) || []).length} règles`);
   check('CSS: polices Cinzel + Amiri intégrées', /Cinzel/.test(css) && /Amiri/.test(css));
+  check('CSS: illustration du fan-kit en fond', /url\([^)]*fankit-bg[^)]*\)/.test(css));
+  const srcText = readAllSources();
+  check("CSS: bandeau officiel dans l'en-tête", /fankit-banner/.test(readAllSources()));
   check('CSS: textures du thème associées',
-    ['stone', 'bronze', 'crimson', 'backdrop', 'florish', 'btn-steel'].every((n) => new RegExp(`url\\([^)]*${n}[^)]*\\)`).test(css)),
-    ['stone', 'bronze', 'crimson', 'backdrop', 'florish', 'btn-steel'].filter((n) => !new RegExp(`url\\([^)]*${n}[^)]*\\)`).test(css)).join(','));
+    ['stone', 'bronze', 'crimson', 'florish', 'btn-steel', 'fankit'].every((n) => new RegExp(`url\\([^)]*${n}[^)]*\\)`).test(css)),
+    ['stone', 'bronze', 'crimson', 'florish', 'btn-steel', 'fankit'].filter((n) => !new RegExp(`url\\([^)]*${n}[^)]*\\)`).test(css)).join(','));
   check('CSS: police arabe sur html[dir=rtl]', /html\[dir=rtl\][^{]*\{[^}]*Amiri/.test(css));
 } else {
   console.log('⚠ dist/ absent — lancez `npm run build` pour les tests de style.');

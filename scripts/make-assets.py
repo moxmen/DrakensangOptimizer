@@ -208,6 +208,8 @@ FRAME = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" width="
 
 
 # ── 6. texture de fond « mur de donjon » ────────────────────────────────────
+# NOTE : l'application utilise désormais l'illustration officielle du fan-kit
+# (fankit-bg.jpg). Cette texture reste disponible pour un fond alternatif.
 def backdrop():
     w, h = 480, 480
     img = vgradient((w, h), [(0, (14, 17, 24)), (0.45, (9, 11, 16)), (1, (5, 6, 9))])
@@ -237,7 +239,7 @@ def backdrop():
     glow = glow.filter(ImageFilter.GaussianBlur(30))
     img = Image.alpha_composite(img.convert('RGBA'), glow).convert('RGB')
     img = grain(img, 7)
-    img.save(os.path.join(OUT, 'backdrop.jpg'), quality=80)
+    img.save(os.path.join(OUT, 'backdrop-unused.jpg'), quality=80)
 
 
 # ── 7. braise / gemme (icône de section) ────────────────────────────────────

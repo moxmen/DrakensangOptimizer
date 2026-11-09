@@ -4,7 +4,8 @@ import './header.css';
 
 /**
  * Bannière + sélecteur de langue (drapeaux) inspirés du site officiel :
- * plaque de titre en bronze, logo dans un cartouche, barre supérieure en acier.
+ * le bandeau du fan-kit Drakensang Online (dragon, logo, blasons) sert de
+ * cartouche, surmonté de la barre utilitaire en acier.
  */
 export default function Header({ t, lang, setLang, onNav, activeNav, showNotice }) {
   return (
@@ -34,13 +35,14 @@ export default function Header({ t, lang, setLang, onNav, activeNav, showNotice 
       </div>
 
       <div className="crest">
-        <div className="crest__frame">
-          <h1 className="crest__title">
+        <div className="crest__banner" role="img" aria-label="Drakensang Online">
+          <img src="./assets/theme/fankit-banner.png" alt="" />
+          <div className="crest__caption">
             <span className="crest__titleMain">Draken</span>
             <span className="crest__titleSub">Optimizer</span>
-          </h1>
-          <p className="crest__tagline">{t('appSubtitle')}</p>
+          </div>
         </div>
+        <p className="crest__tagline">{t('appName')} — {t('appSubtitle')}</p>
       </div>
 
       <nav className="main-nav" aria-label={t('appName')}>

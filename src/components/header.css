@@ -61,71 +61,78 @@
 .lang-flag.is-active span { color: var(--gold-2); }
 @media (min-width: 900px) { .lang-flag span { display: inline; } }
 
-/* emblème central */
+/* emblème central : bandeau officiel du fan-kit + titre gravé */
 .crest {
   position: relative;
   text-align: center;
-  padding: 26px 12px 10px;
-  background:
-    radial-gradient(520px 130px at 50% 12%, rgba(255, 140, 40, 0.22), transparent 70%),
-    linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.35));
+  padding: 18px 12px 4px;
 }
-.crest__frame {
+.crest__banner {
   position: relative;
-  display: inline-block;
-  padding: 14px 58px 16px;
-  border: 1px solid rgba(201, 164, 87, 0.55);
+  display: block;
+  width: min(1240px, 96vw);
+  margin-inline: auto;
   border-radius: 4px;
-  background:
-    radial-gradient(120% 160% at 50% 0%, #2a1509 0%, #120a06 45%, #0a0705 100%);
+  overflow: hidden;
+  border: 1px solid rgba(201, 164, 87, 0.45);
   box-shadow:
     0 0 0 1px rgba(0, 0, 0, 0.9),
-    0 12px 40px rgba(0, 0, 0, 0.85),
-    inset 0 1px 0 rgba(255, 220, 150, 0.18),
-    inset 0 -14px 30px rgba(255, 110, 20, 0.12);
-  max-width: 92vw;
+    0 18px 44px rgba(0, 0, 0, 0.85),
+    inset 0 1px 0 rgba(255, 220, 150, 0.14);
+  background: #06080c;
 }
-.crest__frame::before,
-.crest__frame::after {
+.crest__banner img {
+  display: block;
+  width: 100%;
+  height: clamp(96px, 13vw, 168px);
+  object-fit: cover;
+  object-position: center 62%;
+  filter: saturate(1.05) contrast(1.03);
+}
+/* assombrit le bas du bandeau pour y poser le titre */
+.crest__banner::after {
   content: '';
   position: absolute;
-  top: 50%;
-  width: 46px;
-  height: 46px;
-  transform: translateY(-50%);
-  background: url('../assets/theme/florish.svg') no-repeat center / contain;
-  opacity: 0.85;
+  inset: 0;
   pointer-events: none;
+  background:
+    radial-gradient(70% 120% at 50% 120%, rgba(0, 0, 0, 0.92), transparent 62%),
+    linear-gradient(180deg, transparent 46%, rgba(4, 6, 9, 0.86) 78%, rgba(3, 4, 6, 0.97) 100%);
 }
-.crest__frame::before { inset-inline-start: 6px; transform: translateY(-50%) scaleX(-1); }
-.crest__frame::after { inset-inline-end: 6px; }
-
-.crest__title {
-  margin: 0;
+.crest__caption {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 6px;
+  z-index: 2;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
   font-family: var(--font-display);
-  font-size: clamp(28px, 5.2vw, 52px);
-  line-height: 0.95;
-  letter-spacing: 0.06em;
+  font-size: clamp(19px, 3.1vw, 34px);
+  line-height: 1;
+  letter-spacing: 0.09em;
   text-transform: uppercase;
-  background: linear-gradient(180deg, #fff2c6 0%, #ffc247 32%, #ff7a12 58%, #b8280a 84%, #6b1204 100%);
+  background: linear-gradient(180deg, #fff3cd 0%, #ffc247 34%, #ff7d13 62%, #a8210a 90%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   filter:
-    drop-shadow(0 2px 0 #2a0b03)
-    drop-shadow(0 0 16px rgba(255, 120, 20, 0.65))
-    drop-shadow(0 0 44px rgba(255, 70, 10, 0.45));
+    drop-shadow(0 2px 0 #200703)
+    drop-shadow(0 0 14px rgba(255, 120, 20, 0.6));
 }
-.crest__titleMain, .crest__titleSub { display: block; }
-.crest__titleSub { font-size: 0.62em; letter-spacing: 0.3em; margin-top: 2px; }
+html[dir='rtl'] .crest__caption { letter-spacing: 0; font-family: var(--font-arabic); }
+
 .crest__tagline {
   margin: 8px 0 0;
-  font-size: 11px;
-  letter-spacing: 0.24em;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
   text-transform: uppercase;
   color: #c9ab72;
   text-shadow: 0 1px 0 #000;
+  padding-inline: 16px;
 }
+html[dir='rtl'] .crest__tagline { letter-spacing: 0; font-family: var(--font-arabic); font-size: 12px; text-transform: none; }
 
 /* navigation principale */
 .main-nav {
@@ -202,5 +209,5 @@
 }
 
 html[dir='rtl'] .nav-btn { letter-spacing: 0; font-family: var(--font-arabic); font-size: 14px; text-transform: none; }
-html[dir='rtl'] .crest__title { letter-spacing: 0; }
+
 html[dir='rtl'] .site-header__meta { text-align: start; }
