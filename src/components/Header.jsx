@@ -1,5 +1,7 @@
 import React from 'react';
 import { LANGUAGES } from '../i18n/index.js';
+import { FLAGS } from '../assets/theme/flags/index.js';
+import fankitBanner from '../assets/theme/fankit-banner.png';
 import './header.css';
 
 /**
@@ -24,7 +26,7 @@ export default function Header({ t, lang, setLang, onNav, activeNav, showNotice 
                   title={`${l.label}${l.dir === 'rtl' ? ' (RTL)' : ''}`}
                   aria-pressed={lang === l.code}
                 >
-                  <img src={`./assets/theme/flags/${l.flag}.png`} alt={l.label} />
+                  <img src={FLAGS[l.flag]} alt={l.label} />
                   <span>{l.label}</span>
                 </button>
               ))}
@@ -36,7 +38,7 @@ export default function Header({ t, lang, setLang, onNav, activeNav, showNotice 
 
       <div className="crest">
         <div className="crest__banner" role="img" aria-label="Drakensang Online">
-          <img src="./assets/theme/fankit-banner.png" alt="" />
+          <img src={fankitBanner} alt="" />
           <div className="crest__caption">
             <span className="crest__titleMain">Draken</span>
             <span className="crest__titleSub">Optimizer</span>

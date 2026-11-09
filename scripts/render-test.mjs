@@ -102,6 +102,18 @@ check('Language flags rendered', root.querySelectorAll('.lang-flag').length === 
 check('Gear slots rendered', root.querySelectorAll('.gear-slot').length === 14, `${root.querySelectorAll('.gear-slot').length} slots`);
 check('DPS panel rendered', !!root.querySelector('.dps-huge'), root.querySelector('.dps-huge')?.textContent);
 check('Arabic flag present', !!root.querySelector('.lang-flag[title*="العربية"]'));
+// toutes les images doivent pointer vers un fichier réellement présent
+const imageSrcs = [...root.querySelectorAll('img')].map((i) => i.getAttribute('src')).filter(Boolean);
+const brokenImgs = imageSrcs.filter((src) => {
+  if (/^(data:|blob:|https?:)/.test(src)) return false;
+  const clean = src.replace(/^\.\//, '').replace(/^\//, '').split('?')[0];
+  return !fs.existsSync(path.join(ROOT, 'public', clean));
+});
+check('All images resolve to real files', brokenImgs.length === 0, brokenImgs.slice(0, 5).join(', '));
+// en test, esbuild renvoie une data-URL : on vérifie que le module importe l'image
+check('Header banner is a bundled asset',
+  /=fankitBanner|fankit-banner/.test(readAllSources()),
+  'import nominal présent dans Header.jsx');
 
 // ── changement de langue → RTL ──────────────────────────────────────────────
 const arBtn = [...root.querySelectorAll('.lang-flag')].find((b) => (b.getAttribute('title') || '').includes('العربية'));
