@@ -146,6 +146,10 @@ export default function App() {
                   {build.slots.weapons?.TwoHandedWeapon && build.job !== 'RNG' ? (
                     <p className="notice notice--warn gear-warn">{t('warning2H')}</p>
                   ) : null}
+                  {!isSlotEmpty(build.slots.mantles)
+                    && build.knowledge < (catalog.meta?.knowledgeForMantle ?? 30) ? (
+                      <p className="notice notice--warn gear-warn">{t('notEnoughKnowledge')}</p>
+                    ) : null}
                   <div className="gear-hint small muted">
                     {t('clickToEdit')} · {t('rightClickToClear')}
                   </div>

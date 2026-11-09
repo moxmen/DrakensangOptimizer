@@ -190,6 +190,7 @@
   width: 14px;
   height: 8px;
   transform: translateX(-50%);
+  /* centré quelle que soit la direction du document */
   background: radial-gradient(circle, var(--gold-2), transparent 70%);
 }
 

@@ -100,9 +100,11 @@ check('Arabic UI strings present', /التجهيزات|الإحصاءات|الض
 check('Arabic slot labels', /تميمة|حزام|عباءة/.test(arabicText));
 
 // ── capture du HTML pour inspection visuelle ──────────────────────────────
-fs.writeFileSync('/tmp/dom-en.html', root.innerHTML.replace(/></g, '>\n<'));
-console.log('SLOT LABELS:', [...root.querySelectorAll('.gear-slot__label')].map(n=>n.textContent).join('|'));
-console.log('NAV:', [...root.querySelectorAll('.nav-btn')].map(n=>JSON.stringify(n.textContent)).join(','));
+if (process.env.DUMP) fs.writeFileSync('/tmp/dom-en.html', root.innerHTML.replace(/></g, '>\n<'));
+if (process.env.DUMP) {
+  console.log('SLOT LABELS:', [...root.querySelectorAll('.gear-slot__label')].map((n) => n.textContent).join('|'));
+  console.log('NAV:', [...root.querySelectorAll('.nav-btn')].map((n) => JSON.stringify(n.textContent)).join(','));
+}
 // ── retour à l'anglais ─────────────────────────────────────────────────────
 const enBtn = [...root.querySelectorAll('.lang-flag')].find((b) => (b.getAttribute('title') || '').startsWith('English'));
 enBtn.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
@@ -188,6 +190,21 @@ check('Essence applied', JSON.parse(window.localStorage.getItem('dso.current.v3'
   JSON.parse(window.localStorage.getItem('dso.current.v3')).essence);
 check('Essence picker closed', !root.querySelector('.essence-overlay'));
 
+// ── comparaison A/B avec un second build ─────────────────────────────────
+const compareNav = [...root.querySelectorAll('.nav-btn')].find((b) => (b.textContent || '').trim() === 'Compare');
+compareNav?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(250);
+const sendB = [...root.querySelectorAll('.compare__picker .btn')].find((b) => /send current build to B/i.test(b.textContent));
+sendB?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(300);
+check('Compare table rendered', !!root.querySelector('.compare-table'));
+const compareRows = root.querySelectorAll('.compare-table tbody tr').length;
+check('Compare lists all metrics', compareRows >= 12, `${compareRows} lignes`);
+check('Compare identical builds => zero diff', /\b0\b/.test(root.querySelector('.compare-table__diff')?.textContent || 'x'),
+  root.querySelector('.compare-table__diff')?.textContent);
+const swapBtn = [...root.querySelectorAll('.compare__picker .btn')].find((b) => /swap/i.test(b.textContent));
+check('Swap button enabled with B loaded', swapBtn && !swapBtn.disabled);
+
 // ── infobulle d'objet au survol ──────────────────────────────────────────
 equipmentBtn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
 await wait(200);
@@ -251,6 +268,19 @@ for (const label of ['المقارنة', 'المجموعات المحفوظة', 
   const body = text();
   check(`Arabic page ${label}`, !!btn && !/NaN|undefined/.test(body) && window.document.documentElement.getAttribute('dir') === 'rtl');
 }
+
+// ── noms arabes des compétences et talents ───────────────────────────────
+const arSkills = [...root.querySelectorAll('.nav-btn')].find((b) => (b.textContent || '').trim() === 'المهارات');
+arSkills?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(250);
+const arSkillText = text();
+check('Arabic skill names', /ضربة|تحطيم|غاضبة/.test(arSkillText), arSkillText.match(/[\u0600-\u06FF][^A-Za-z0-9]{2,20}/)?.join(' '));
+check('No latin skill names left in AR', !/Angry strike|Smash|Meteor/.test(arSkillText));
+const arTalents = [...root.querySelectorAll('.nav-btn')].find((b) => (b.textContent || '').trim() === 'المواهب');
+arTalents?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(250);
+check('Arabic talent names', /[\u0600-\u06FF]/.test(root.querySelector('.talents__grid')?.textContent || ''));
+check('No latin talent names left in AR', !/Two-handed master|Blocker|Death wail/.test(text()));
 
 // ── aller-retour JSON (export → import) ──────────────────────────────────
 const en = [...root.querySelectorAll('.lang-flag')].find((b) => (b.getAttribute('title') || '').startsWith('English'));
