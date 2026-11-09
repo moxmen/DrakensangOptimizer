@@ -341,6 +341,7 @@ if (distCss.length) {
   check('CSS: panneaux avec coins ornés', /\.panel:before/.test(css)
     && /url\([^)]*frame[^)]*\)/.test(css)
     && /\.panel__header:before[^{]*\{[^}]*florish/.test(css));
+  check('CSS: cadre 9-slice dégradé sur les panneaux', /\.panel:before\{[^}]*mask-composite/.test(css));
   check('CSS: curseur pointeur sur les emplacements', /\.gear-slot\{[^}]*cursor:pointer/.test(css));
   check('CSS: DPS en grand corps typographique', /\.dps-huge\{[^}]*font-size/.test(css));
   check('CSS: surcharges RTL présentes', /html\[dir=rtl\]/.test(css),

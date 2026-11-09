@@ -44,20 +44,40 @@
   box-shadow: var(--shadow-panel);
   margin-bottom: 18px;
 }
-/* coins ornés */
-.panel::before,
+/* cadre ornemental complet (9-slice) */
+.panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius);
+  padding: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    160deg,
+    rgba(246, 230, 184, 0.85) 0%,
+    rgba(201, 164, 87, 0.55) 18%,
+    rgba(109, 79, 32, 0.4) 45%,
+    rgba(201, 164, 87, 0.5) 78%,
+    rgba(246, 230, 184, 0.7) 100%
+  );
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0.75;
+}
+/* pointes dorées aux quatre angles */
 .panel::after {
   content: '';
   position: absolute;
-  width: 26px;
-  height: 26px;
-  background: url('../assets/theme/frame.svg') no-repeat;
-  background-size: 100% 100%;
-  opacity: 0.85;
+  inset: -3px;
   pointer-events: none;
+  background:
+    url('../assets/theme/frame.svg') no-repeat left top / 22px 22px,
+    url('../assets/theme/frame.svg') no-repeat right top / 22px 22px,
+    url('../assets/theme/frame.svg') no-repeat left bottom / 22px 22px,
+    url('../assets/theme/frame.svg') no-repeat right bottom / 22px 22px;
+  opacity: 0.55;
 }
-.panel::before { inset-inline-start: -2px; top: -2px; }
-.panel::after { inset-inline-end: -2px; bottom: -2px; transform: rotate(180deg); }
 
 .panel__header {
   position: relative;
