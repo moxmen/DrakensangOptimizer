@@ -39,6 +39,16 @@ const dom = new JSDOM('<!doctype html><html><head></head><body><div id="root"></
 });
 
 const { window } = dom;
+
+// injecte le CSS compilé (npm run build) pour pouvoir tester les styles réels
+const distCss = fs.existsSync(path.join(ROOT, 'dist'))
+  ? fs.readdirSync(path.join(ROOT, 'dist/assets')).filter((f) => f.endsWith('.css'))
+  : [];
+for (const file of distCss) {
+  const style = window.document.createElement('style');
+  style.textContent = fs.readFileSync(path.join(ROOT, 'dist/assets', file), 'utf8');
+  window.document.head.appendChild(style);
+}
 window.fetch = async (url) => {
   const file = String(url).replace(/^\.\//, '').split('?')[0];
   const body = file.endsWith('items.json') ? items : file.endsWith('names.json') ? names : i18n;
@@ -222,6 +232,33 @@ for (const [label, needle] of [['Skills', 'skills-table'], ['Talents', 'talents'
   btn.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
   await wait(250);
   check(`Nav ${label}`, !!root.querySelector(`.${needle}`), root.querySelector(`.${needle}`) ? '' : text().slice(0, 80).replace(/\s+/g, ' '));
+}
+
+// ── styles réellement appliquées (jsdom CSSOM) ────────────────────────────
+const win = window;
+const cs = (sel, prop) => {
+  const el = root.querySelector(sel);
+  if (!el) return null;
+  return win.getComputedStyle(el).getPropertyValue(prop);
+};
+if (distCss.length) {
+  // jsdom ne calcule pas la cascade complète : on vérifie le CSS compilé lui-même
+  const css = distCss.map((f) => fs.readFileSync(path.join(ROOT, 'dist/assets', f), 'utf8')).join('\n');
+  check('CSS: boutons sculptés (dégradé + bevel)', /\.btn\{[^}]*--btn: url/.test(css));
+  check('CSS: panneaux avec coins ornés', /\.panel:before/.test(css)
+    && /url\([^)]*frame[^)]*\)/.test(css)
+    && /\.panel__header:before[^{]*\{[^}]*florish/.test(css));
+  check('CSS: curseur pointeur sur les emplacements', /\.gear-slot\{[^}]*cursor:pointer/.test(css));
+  check('CSS: DPS en grand corps typographique', /\.dps-huge\{[^}]*font-size/.test(css));
+  check('CSS: surcharges RTL présentes', /html\[dir=rtl\]/.test(css),
+    `${(css.match(/html\[dir=rtl\]/g) || []).length} règles`);
+  check('CSS: polices Cinzel + Amiri intégrées', /Cinzel/.test(css) && /Amiri/.test(css));
+  check('CSS: textures du thème associées',
+    ['stone', 'bronze', 'crimson', 'backdrop', 'florish', 'btn-steel'].every((n) => new RegExp(`url\\([^)]*${n}[^)]*\\)`).test(css)),
+    ['stone', 'bronze', 'crimson', 'backdrop', 'florish', 'btn-steel'].filter((n) => !new RegExp(`url\\([^)]*${n}[^)]*\\)`).test(css)).join(','));
+  check('CSS: police arabe sur html[dir=rtl]', /html\[dir=rtl\][^{]*\{[^}]*Amiri/.test(css));
+} else {
+  console.log('⚠ dist/ absent — lancez `npm run build` pour les tests de style.');
 }
 
 console.log(`\n${report.join('\n')}\n`);
