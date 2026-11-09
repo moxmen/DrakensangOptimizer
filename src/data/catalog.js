@@ -28,6 +28,11 @@ const normalizeEntry = (entry) => {
   const out = { ...entry, stats: entry.stats || {} };
   if (entry.slots) out.slotList = String(entry.slots).split(',');
   if (entry.setpieces) out.pieceList = String(entry.setpieces).split(',');
+  // `job` peut être "WAR" ou "WAR, SW, RNG, DWF" : on expose toujours un tableau
+  const raw = entry.jobs || entry.job;
+  out.jobs = Array.isArray(raw)
+    ? raw
+    : String(raw || '').split(',').map((j) => j.trim()).filter(Boolean);
   return out;
 };
 

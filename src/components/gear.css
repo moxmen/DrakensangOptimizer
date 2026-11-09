@@ -93,10 +93,11 @@
 
 .gear-slot__label {
   position: absolute;
-  bottom: -14px;
-  inset-inline: -8px;
-  font-size: 9px;
-  letter-spacing: 0.1em;
+  bottom: -13px;
+  inset-inline: -10px;
+  font-size: 8.5px;
+  letter-spacing: 0.04em;
+  line-height: 1.15;
   text-transform: uppercase;
   color: rgba(201, 178, 130, 0.55);
   text-align: center;
@@ -105,7 +106,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
-html[dir='rtl'] .gear-slot__label { letter-spacing: 0; font-size: 10.5px; }
+html[dir='rtl'] .gear-slot__label { letter-spacing: 0; font-size: 9.5px; }
+@media (max-width: 1180px) {
+  .main-nav .nav-btn { font-size: 10px; letter-spacing: 0.06em; padding-inline: 12px; }
+}
 
 .gear-slot__uniq {
   position: absolute;

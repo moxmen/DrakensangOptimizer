@@ -25,6 +25,8 @@ export default function SkillsPanel({ result, build, catalog, t, lang, extended,
       })
       .filter(Boolean)
       .filter((row) => {
+        const jobs = row.skill.jobs || [];
+        if (jobs.length && !jobs.includes(build.job)) return false;
         const level = row.skill.level ?? 1;
         const pvpReq = row.skill.stats.pvpreqlvl || 0;
         return (level <= build.level || level === 999) && pvpReq <= build.pvpLevel;
@@ -33,7 +35,7 @@ export default function SkillsPanel({ result, build, catalog, t, lang, extended,
       .sort((a, b) => (sort === 'dps'
         ? (b.step?.dps || 0) - (a.step?.dps || 0)
         : (a.skill.level ?? 0) - (b.skill.level ?? 0)));
-  }, [result, catalog, lang, build.level, build.pvpLevel, sort]);
+  }, [result, catalog, lang, build.level, build.pvpLevel, build.job, sort]);
 
   return (
     <div className="panel">

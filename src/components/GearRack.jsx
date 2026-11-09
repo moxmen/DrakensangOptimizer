@@ -10,13 +10,23 @@ import './gear.css';
 export const LEFT_SLOTS = ['amulets', 'waists', 'weapondecorations', 'ring1', 'essences', 'ring2', 'weapons'];
 export const RIGHT_SLOTS = ['headarmors', 'shoulders', 'torsos', 'gloves', 'mantles', 'boots', 'offhands'];
 
+/** Copie explicite du DOMRect (plus sûr que `toJSON`, absent de certains moteurs). */
+function rectOf(el, slot) {
+  if (!el || typeof el.getBoundingClientRect !== 'function') return null;
+  const r = el.getBoundingClientRect();
+  return {
+    slot, top: r.top, left: r.left, right: r.right, bottom: r.bottom,
+    width: r.width, height: r.height,
+  };
+}
+
 function GearSlot({ slot, icon, name, quality, unic, onOpen, onClear, t, hint, onHover }) {
   return (
     <button
       type="button"
-      onMouseEnter={(e) => onHover?.({ ...e.currentTarget.getBoundingClientRect().toJSON(), slot })}
+      onMouseEnter={(e) => onHover?.(rectOf(e.currentTarget, slot))}
       onMouseLeave={() => onHover?.(null)}
-      onFocus={(e) => onHover?.({ ...e.currentTarget.getBoundingClientRect().toJSON(), slot })}
+      onFocus={(e) => onHover?.(rectOf(e.currentTarget, slot))}
       onBlur={() => onHover?.(null)}
       className={`gear-slot${icon ? ' has-item' : ''} quality-${quality || 'empty'}`}
       onClick={onOpen}

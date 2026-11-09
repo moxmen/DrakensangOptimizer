@@ -14,9 +14,10 @@ export default function TalentsPanel({ build, catalog, t, lang, onToggleTalent }
   const trees = useMemo(
     () => [
       { key: 'ExpTree', label: t('expTree'), maxLevel: build.level, enabled: true },
-      { key: 'PvPtree', label: t('pvpTree'), maxLevel: build.pvpLevel, enabled: build.opponent === 'pvp' },
+      // L'ancienne version n'ouvrait l'arbre PvP qu'en mode JcJ et selon le niveau JcJ
+      { key: 'PvPtree', label: t('pvpTree'), maxLevel: build.pvpLevel, enabled: build.pvpLevel > 0 },
     ],
-    [t, build.level, build.pvpLevel, build.opponent],
+    [t, build.level, build.pvpLevel],
   );
 
   return (
@@ -36,7 +37,7 @@ export default function TalentsPanel({ build, catalog, t, lang, onToggleTalent }
                 {LEVELS.map((lvl, rowIndex) => {
                   const rowTalents = talents.filter(
                     (tl) => tl.category === tree.key && tl.level === lvl
-                      && (!tl.jobs || !tl.jobs.length || tl.jobs.includes(build.job)),
+                      && (!tl.jobs.length || tl.jobs.includes(build.job)),
                   );
                   const available = lvl <= tree.maxLevel && tree.enabled;
                   return (

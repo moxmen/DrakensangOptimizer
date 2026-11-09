@@ -19,6 +19,7 @@ import { parseRelaxedJson, writeJson, LANGS } from './lib.mjs';
 import { WORDS, WORDS2, WORDS3, PHRASES } from './arabic/dict.mjs';
 import { translateName, missing } from './arabic/translate.mjs';
 import { SKILL_FRAMES, DEFAULT_FRAMES } from './skill-frames.mjs';
+import { EXTRA_TALENT_NAMES } from './extra-names.mjs';
 import { descriptionAr } from './arabic/descriptions.mjs';
 import { SYS_Arabic, UI } from './arabic/sysmess.mjs';
 
@@ -68,6 +69,12 @@ for (const cat of TYPES) {
     names[cat] = names[cat] || {};
     names[cat][row.langid] = tr;
   }
+}
+
+// Complète les entrées absentes de Langs.json (talents ultimes JcJ notamment)
+for (const [langid, bag] of Object.entries(EXTRA_TALENT_NAMES)) {
+  names.talents = names.talents || {};
+  if (!names.talents[langid]) names.talents[langid] = bag;
 }
 
 // UI strings : eng + ara from UI, then FR/DE/ES extras merged from Langs sysmess

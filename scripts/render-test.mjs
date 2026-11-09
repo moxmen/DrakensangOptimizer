@@ -131,6 +131,9 @@ for (const label of ['Equipment', 'Statistics', 'Skills', 'Talents', 'Compare', 
   await wait(220);
   pages[label] = text().replace(/\s+/g, ' ').trim();
 }
+if (process.env.DUMP) {
+  for (const [label, body] of Object.entries(pages)) console.log(`\n===== ${label} =====\n${body.slice(0, 1800)}`);
+}
 for (const [label, body] of Object.entries(pages)) {
   const bad = [];
   if (/NaN/.test(body)) bad.push('NaN');
@@ -184,6 +187,38 @@ await wait(250);
 check('Essence applied', JSON.parse(window.localStorage.getItem('dso.current.v3')).essence === 'Green20',
   JSON.parse(window.localStorage.getItem('dso.current.v3')).essence);
 check('Essence picker closed', !root.querySelector('.essence-overlay'));
+
+// ── infobulle d'objet au survol ──────────────────────────────────────────
+equipmentBtn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(200);
+const wslot = root.querySelector('.gear-slot[data-slot="weapons"]');
+wslot?.dispatchEvent(new window.MouseEvent('mouseover', {
+  bubbles: true, relatedTarget: window.document.body,
+}));
+await wait(250);
+// React utilise `mouseover` (délégué) : on vérifie aussi l'attribut du slot
+const hasItem = root.querySelector('.gear-slot[data-slot="weapons"]')?.classList.contains('has-item');
+check('Item tooltip on hover', !!root.querySelector('.tooltip'), hasItem ? 'slot rempli' : 'slot vide');
+wslot?.dispatchEvent(new window.MouseEvent('mouseout', {
+  bubbles: true, relatedTarget: window.document.body,
+}));
+await wait(150);
+
+// ── filtrage par classe des compétences et talents ───────────────────────
+const skillsBtn = [...root.querySelectorAll('.nav-btn')].find((b) => (b.textContent || '').trim() === 'Skills');
+skillsBtn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(250);
+const skillRows = root.querySelectorAll('.skills-table tbody tr').length;
+check('Skills limited to the current class', skillRows >= 8 && skillRows <= 12, `${skillRows} lignes (WAR)`);
+const skillText = root.querySelector('.skills-table')?.textContent || '';
+check('No foreign-class skill listed', !/Meteor|Fireball|Hunting arrow|Quick shot/.test(skillText));
+
+const talentsBtn = [...root.querySelectorAll('.nav-btn')].find((b) => (b.textContent || '').trim() === 'Talents');
+talentsBtn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(250);
+const talentText = text();
+check('Talents limited to the current class', !/Big bang|Longbow veteran|Nimble feet/.test(talentText));
+check('Talents PvP ultimate translated', /Death wail/.test(talentText));
 
 // ── sauvegarde / export / import ─────────────────────────────────────────
 const savedBtn = [...root.querySelectorAll('.nav-btn')].find((b) => (b.textContent || '').trim() === 'Saved builds');
