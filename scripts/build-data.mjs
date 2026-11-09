@@ -21,7 +21,7 @@ import { translateName, missing } from './arabic/translate.mjs';
 import { SKILL_FRAMES, DEFAULT_FRAMES } from './skill-frames.mjs';
 import { EXTRA_TALENT_NAMES } from './extra-names.mjs';
 import { descriptionAr } from './arabic/descriptions.mjs';
-import { SYS_Arabic, UI } from './arabic/sysmess.mjs';
+import { SYS_Arabic, UI, CALC_STRINGS } from './arabic/sysmess.mjs';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const LEGACY = path.join(ROOT, 'legacy/Production');
@@ -97,6 +97,10 @@ for (const l of LANGS_UI) {
 const { UI_EXTRA } = await import('./arabic/sysmess.mjs');
 for (const l of ['fra', 'deu', 'esp']) {
   for (const [k, v] of flat(UI_EXTRA[l] || {})) uiFlat[l][k] = v;
+}
+// Éditeur de formules : chaînes complètes dans les cinq langues
+for (const l of LANGS_UI) {
+  for (const [k, v] of Object.entries(CALC_STRINGS[l] || {})) uiFlat[l][k] = v;
 }
 ui.languages = {
   eng: { label: 'English', native: 'English', dir: 'ltr' },

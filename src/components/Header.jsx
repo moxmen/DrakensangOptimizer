@@ -55,6 +55,7 @@ export default function Header({ t, lang, setLang, onNav, activeNav, showNotice 
             ['skills', t('nav.skills')],
             ['talents', t('nav.talents')],
             ['compare', t('nav.compare')],
+            ['calculator', t('nav.calculator')],
             ['saved', t('nav.saved')],
             ['about', t('nav.about')],
           ].map(([key, label]) => (

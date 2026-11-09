@@ -9,9 +9,10 @@
     "build": "vite build",
     "preview": "vite preview --host 0.0.0.0",
     "data": "node scripts/build-data.mjs",
-    "test": "node scripts/verify-legacy.mjs && node scripts/render-test.mjs",
+    "test": "node scripts/verify-legacy.mjs && node scripts/verify-rules.mjs && node scripts/render-test.mjs",
     "test:engine": "node scripts/verify-legacy.mjs",
-    "test:ui": "node scripts/render-test.mjs"
+    "test:ui": "node scripts/render-test.mjs",
+    "test:rules": "node scripts/verify-rules.mjs"
   },
   "dependencies": {
     "@fontsource/amiri": "^5.3.0",

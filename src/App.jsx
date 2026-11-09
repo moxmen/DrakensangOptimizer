@@ -11,10 +11,12 @@ import ItemEditor from './components/ItemEditor.jsx';
 import ItemTooltip from './components/ItemTooltip.jsx';
 import EssencePicker from './components/EssencePicker.jsx';
 import AboutPanel from './components/AboutPanel.jsx';
+import CalculatorPanel from './components/CalculatorPanel.jsx';
 import { useI18n } from './i18n/index.js';
 import { buildCatalog } from './data/catalog.js';
-import { computeBuild } from './engine/stats.js';
+import { computeBuildWithRules } from './engine/rulesEngine.js';
 import { useBuildStore } from './state/useBuildStore.js';
+import { useRules } from './state/useRules.js';
 import { isSlotEmpty } from './state/build.js';
 import './styles/tokens.css';
 import './styles/theme.css';
@@ -53,11 +55,14 @@ export default function App() {
   const { t, tSys, lang, setLang, dir } = i18n;
 
   const store = useBuildStore(catalog, !!catalog);
+  const formulas = useRules();
   const { build, update, setSlot, clearSlot, toggleTalent, resetBuild, randomFill, savedBuilds, saveBuild, deleteBuild, duplicateBuild, loadBuild, importJson, exportJson, notify, toast } = store;
 
   const result = useMemo(
-    () => (build && catalog ? computeBuild(build, catalog) : null),
-    [build, catalog],
+    () => (build && catalog
+      ? computeBuildWithRules(build, catalog, { rules: formulas.rules, stats: formulas.statIds })
+      : null),
+    [build, catalog, formulas.rules, formulas.statIds],
   );
 
   // ── actions d'équipement ─────────────────────────────────────────────────
@@ -220,6 +225,16 @@ export default function App() {
           />
         )}
 
+        {nav === 'calculator' && (
+          <CalculatorPanel
+            t={t}
+            lang={lang}
+            result={result}
+            catalog={catalog}
+            formulas={formulas}
+          />
+        )}
+
         {nav === 'about' && <AboutPanel t={t} catalog={catalog} />}
 
         {nav === 'saved' && (
@@ -263,6 +278,7 @@ export default function App() {
           lang={lang}
           onSave={handleSaveItem}
           onCancel={() => setEditorSlot(null)}
+          customStats={formulas.stats}
         />
       ) : null}
 

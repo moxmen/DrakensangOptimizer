@@ -51,8 +51,11 @@ function editorIcon(item, slot, job) {
  * entièrement personnalisé (stats de base, enchantements, gemmes).
  */
 export default function ItemEditor({
-  slot, build, catalog, t, lang, onSave, onCancel,
+  slot, build, catalog, t, lang, onSave, onCancel, customStats = [],
 }) {
+  // les statistiques créées dans l'écran « Calculateur » sont saisissables ici
+  const off = [...OFFENSIVE, ...customStats.filter((c) => c.kind !== 'flat').map((c) => c.id)];
+  const def = [...DEFENSIVE, ...customStats.filter((c) => c.kind === 'flat').map((c) => c.id)];
   const job = build.job;
   const category = categoryForSlot(slot);
   const database = catalog[category] || [];
@@ -333,10 +336,10 @@ export default function ItemEditor({
                   >
                     <option value="">{t('emptyEnchant')}</option>
                     <optgroup label={t('sys64') === 'sys64' ? 'Offensive' : t('sys64')}>
-                      {OFFENSIVE.map((s) => <option key={s} value={s}>{t(s)}</option>)}
+                      {off.map((s) => <option key={s} value={s}>{STAT_LABELS[s] ? t(s) : (customStats.find((c) => c.id === s)?.label || s)}</option>)}
                     </optgroup>
                     <optgroup label={t('sys65') === 'sys65' ? 'Defensive' : t('sys65')}>
-                      {DEFENSIVE.map((s) => <option key={s} value={s}>{t(s)}</option>)}
+                      {def.map((s) => <option key={s} value={s}>{STAT_LABELS[s] ? t(s) : (customStats.find((c) => c.id === s)?.label || s)}</option>)}
                     </optgroup>
                   </select>
                   <input

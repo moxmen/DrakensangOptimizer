@@ -54,6 +54,7 @@ window.fetch = async (url) => {
   const body = file.endsWith('items.json') ? items : file.endsWith('names.json') ? names : i18n;
   return { ok: true, json: async () => JSON.parse(body), text: async () => body };
 };
+window.confirm = () => true;
 window.matchMedia = window.matchMedia || (() => ({ matches: false, addListener() {}, removeListener() {} }));
 window.IntersectionObserver = class { observe() {} unobserve() {} disconnect() {} };
 window.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
@@ -153,7 +154,7 @@ if (cancelBtn) {
 
 // ── audit du texte de chaque page (NaN / undefined / clés brutes) ──────────
 const pages = {};
-for (const label of ['Equipment', 'Statistics', 'Skills', 'Talents', 'Compare', 'Saved builds', 'About']) {
+for (const label of ['Equipment', 'Statistics', 'Skills', 'Talents', 'Compare', 'Calculator', 'Saved builds', 'About']) {
   const btn = [...root.querySelectorAll('.nav-btn')].find((b) => (b.textContent || '').trim() === label);
   btn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
   await wait(220);
@@ -285,11 +286,130 @@ check('Saved build list rendered', root.querySelectorAll('.saved__item').length 
 const exported = saved[0].build;
 check('Serialized build has job/level', exported.job === 'WAR' && typeof exported.level === 'number', `${exported.job}/${exported.level}`);
 
+// ── éditeur de formules : aucune ligne de code requise ────────────────────
+/** Affecte une valeur et déclenche React sans casser son suivi interne. */
+function setNativeValue(el, value) {
+  const proto = el.tagName === 'TEXTAREA'
+    ? window.HTMLTextAreaElement.prototype
+    : window.HTMLInputElement.prototype;
+  Object.getOwnPropertyDescriptor(proto, 'value').set.call(el, value);
+  el.dispatchEvent(new window.Event('input', { bubbles: true }));
+}
+const navTo = async (label) => {
+  const btn = [...root.querySelectorAll('.nav-btn')].find((b) => (b.textContent || '').trim() === label);
+  btn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await wait(250);
+  return btn;
+};
+
+await navTo('Calculator');
+const ruleItems = root.querySelectorAll('.rules__item');
+check('Calculator screen renders rules', ruleItems.length >= 40, `${ruleItems.length} règles`);
+check('Calculator lists the DPS output rule',
+  [...ruleItems].some((n) => /DPS/.test(n.textContent || '')));
+
+// une formule invalide doit être signalée immédiatement
+const firstRule = ruleItems[0];
+[...firstRule.querySelectorAll('.icon-btn')][3]?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(150);
+const formulaArea = firstRule.parentElement.querySelector('.rules__item textarea');
+setNativeValue(formulaArea, 'base + ');
+await wait(150);
+check('Invalid formula flagged', !!root.querySelector('.rules__item.is-invalid'),
+  root.querySelector('.rules__item.is-invalid')?.textContent?.slice(0, 60));
+const msg = root.querySelector('.rules__item.is-invalid .rules__error')?.textContent || '';
+check('Formula error message is explicit', /incomplète|attendu|Caractère|Élément/i.test(msg), msg);
+
+// « rétablir les défauts » doit remettre la formule d'origine
+check('App still mounted after invalid formula', !!root.querySelector('.rules__item'));
+const resetBtn = [...root.querySelectorAll('.btn--crimson')][0];
+resetBtn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(250);
+check('Restore defaults clears the error', !root.querySelector('.rules__item.is-invalid'));
+
+// modifier la formule du DPS doit changer le DPS affiché
+await navTo('Equipment');
+const dpsBeforeEdit = root.querySelector('.dps-huge')?.textContent;
+await navTo('Calculator');
+const dpsRule = root.querySelector('[data-rule-id="dps"]');
+check('DPS rule is editable', !!dpsRule);
+[...(dpsRule?.querySelectorAll('.icon-btn') || [])][3]?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(150);
+const dpsArea = dpsRule?.querySelector('textarea');
+if (dpsArea) setNativeValue(dpsArea, '100');
+await wait(400);
+await navTo('Equipment');
+const dpsAfterEdit = root.querySelector('.dps-huge')?.textContent;
+check('Custom DPS formula applied', /^\s*100\.00/.test(dpsAfterEdit || ''),
+  `${dpsBeforeEdit} → ${dpsAfterEdit}`);
+
+// retour aux formules par défaut : le DPS d'origine revient
+await navTo('Calculator');
+[...root.querySelectorAll('.btn--crimson')][0]?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(400);
+await navTo('Equipment');
+const dpsRestored = root.querySelector('.dps-huge')?.textContent;
+check('Default formulas restored', dpsRestored === dpsBeforeEdit,
+  `${dpsBeforeEdit} → ${dpsRestored}`);
+
+// statistique personnalisée
+await navTo('Calculator');
+[...root.querySelectorAll('.calculator__tab')][1]?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(200);
+const statInputs = root.querySelectorAll('.calculator__toolbar input.input');
+setNativeValue(statInputs[0], 'piercedamage');
+setNativeValue(statInputs[1], 'Piercing damage');
+await wait(120);
+const addStatBtn = [...root.querySelectorAll('.calculator__toolbar .btn--bronze')].at(-1);
+addStatBtn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(400);
+const customStats = JSON.parse(window.localStorage.getItem('dso.stats.v1') || '[]');
+check('Custom statistic added', customStats.some((s) => s.id === 'piercedamage'), `${customStats.length} perso`);
+check('Custom statistic listed', /piercedamage/.test(text()));
+check('Calculator keeps an RTL layout', (() => {
+  return !!root.querySelector('.calculator__intro');
+})(), window.document.documentElement.getAttribute('dir') || '');
+
+// une statistique personnalisée doit pouvoir être saisie sur une pièce
+await navTo('Equipment');
+root.querySelector('.gear-slot[data-slot="waists"]')?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(300);
+root.querySelectorAll('.editor__list li button')[0]?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+await wait(250);
+const enchSel = root.querySelector('.editor__enchant select');
+const offered = [...(enchSel?.options || [])].some((o) => o.value === 'piercedamage');
+check('Custom statistic offered in the item editor', offered, `${enchSel?.options?.length ?? 0} choix`);
+if (offered) {
+  Object.getOwnPropertyDescriptor(window.HTMLSelectElement.prototype, 'value').set.call(enchSel, 'piercedamage');
+  enchSel.dispatchEvent(new window.Event('change', { bubbles: true }));
+  await wait(200);
+  const enchVal = root.querySelector('.editor__enchant input');
+  setNativeValue(enchVal, '50');
+  await wait(150);
+  [...root.querySelectorAll('.editor .btn')].find((b) => /Apply to slot/i.test(b.textContent))
+    ?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await wait(400);
+  const belt = JSON.parse(window.localStorage.getItem('dso.current.v3') || '{}').slots?.waists;
+  check('Custom statistic stored on the item',
+    belt?.enchants?.[0]?.label === 'piercedamage' && belt?.enchants?.[0]?.value === 50,
+    JSON.stringify(belt?.enchants?.[0]));
+  await navTo('Calculator');
+  root.querySelectorAll('.calculator__tab')[1]?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  await wait(200);
+  const customRow = [...root.querySelectorAll('.calculator__stats tbody tr')]
+    .find((r) => /piercedamage/.test(r.textContent || ''));
+  check('Custom statistic total computed', /\b50\b/.test(customRow?.textContent || ''),
+    (customRow?.textContent || '').replace(/\s+/g, ' '));
+}
+
+check('Rules persisted to localStorage',
+  (JSON.parse(window.localStorage.getItem('dso.formulas.v1') || '[]')).length >= 40);
+
 // ── RTL : chaque page doit rester lisible en arabe ───────────────────────
 const ar = [...root.querySelectorAll('.lang-flag')].find((b) => (b.getAttribute('title') || '').includes('العربية'));
 ar.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
 await wait(300);
-for (const label of ['المقارنة', 'المجموعات المحفوظة', 'حول', 'المهارات', 'المواهب', 'الإحصاءات', 'التجهيزات']) {
+for (const label of ['المقارنة', 'الآلة الحاسبة', 'المجموعات المحفوظة', 'حول', 'المهارات', 'المواهب', 'الإحصاءات', 'التجهيزات']) {
   const btn = [...root.querySelectorAll('.nav-btn')].find((b) => (b.textContent || '').trim() === label);
   btn?.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
   await wait(200);
